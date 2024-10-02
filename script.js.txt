@@ -1,0 +1,36 @@
+document.addEventListener('DOMContentLoaded', () => {
+    i18next.init({
+        lng: 'en',
+        resources: {
+            en: {
+                translation: {}
+            },
+            fr: {
+                translation: {}
+            }
+        }
+    }, function(err, t) {
+        updateContent();
+    });
+
+    function updateContent() {
+        document.querySelectorAll('[data-i18n]').forEach(element => {
+            const key = element.getAttribute('data-i18n');
+            element.textContent = i18next.t(key);
+        });
+    }
+
+    function loadLanguage(lang) {
+        fetch(`locales/${lang}.json`)
+            .then(response => response.json())
+            .then(data => {
+                i18next.addResourceBundle(lang, 'translation', data, true, true);
+                i18next.changeLanguage(lang, updateContent);
+            });
+    }
+
+    document.getElementById('en').addEventListener('click', () => loadLanguage('en'));
+    document.getElementById('fr').addEventListener('click', () => loadLanguage('fr'));
+
+    loadLanguage('en');
+});
